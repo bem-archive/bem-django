@@ -34,8 +34,12 @@ exports.Tech = INHERIT(Tech, {
                     ['pages', ['view', 'html']]
                 ].map(function(i) {
                     return BEM.create.level(
-                        { dir: levelDir, level: levelDir, outputDir: blockDir, forceTech: i[1] },
-                        { names: i[0] })
+                        { dir: levelDir, level: levelDir, outputDir: blockDir },
+                        { names: i[0] }).then(function() {
+                            var f = FS.openSync(PATH.join(blockDir, i[0], '.bem', 'level.js'), 'a');
+                            FS.writeSync(f, '\nexports.defaultTechs = ' + JSON.stringify(i[1]) + ';\n');
+                            FS.closeSync(f);
+                        })
                 })).then(function() {
                     console.log("Don't forget to add '" + vars.BlockName + "' app to the INSTALLED_APPS in settings.py")
                 })
