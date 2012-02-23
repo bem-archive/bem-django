@@ -1,0 +1,10 @@
+{
+    "name": "bem-django",
+    "version": "0.0.0",
+    "dependencies": {},
+    "devDependencies": {
+        "qq": "0.3",
+        "inherit": "1"
+    },
+    "private": true
+}
