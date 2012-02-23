@@ -29,12 +29,12 @@ exports.Tech = INHERIT(Tech, {
 
         return defer.promise.then(function() {
             return Q.all([
-                    ['blocks', ['css', 'js']],
-                    ['models', ['model']],
-                    ['pages', ['view', 'html']]
+                    ['blocks', ['css', 'js'], ['model', 'view']],
+                    ['models', ['model'], ['view']],
+                    ['pages', ['view', 'html'], ['model']]
                 ].map(function(i) {
                     return BEM.create.level(
-                        { dir: levelDir, level: levelDir, outputDir: blockDir },
+                        { dir: levelDir, level: levelDir, outputDir: blockDir, noTech: i[2] },
                         { names: i[0] }).then(function() {
                             var f = FS.openSync(PATH.join(blockDir, i[0], '.bem', 'level.js'), 'a');
                             FS.writeSync(f, '\nexports.defaultTechs = ' + JSON.stringify(i[1]) + ';\n');
