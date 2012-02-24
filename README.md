@@ -2,6 +2,14 @@
 
 ### How to use?
 
+#### Get NodeJS and NPM
+
+#### Get BEM Tools
+
+#### Copy files
+
+#### Build
+
 ### What can you do?
 
 #### Create apps
@@ -10,3 +18,4 @@
 
 #### Create views
 
+### Development

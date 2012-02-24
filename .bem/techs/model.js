@@ -9,14 +9,17 @@ exports.Tech = INHERIT(Tech, {
     getSuffixes: function() { return ['py'] },
 
     getBuildResult: function(prefixes, suffix, outputDir, outputName) {
-        return Q.shallow([
-            'from django.db import models\n\n',
-            this.__base(prefixes, suffix, outputDir, outputName)
-        ])
+        var base = this.__base(prefixes, suffix, outputDir, outputName);
+        return Q.step(
+            function() { return base },
+            function(content) {
+                content.unshift('from django.db import models\n\n');
+                return content
+            }
+        )
     },
 
     getBuildResultChunk: function(relPath, path, suffix) {
-        console.log(path);
         return [
             '# ' + relPath + ': begin',
             FS.readFileSync(path),

@@ -3,8 +3,13 @@
     "version": "0.0.0",
     "dependencies": {},
     "devDependencies": {
+        "coa": "~0.3.2",
+        "q": "~0.7.2",
         "qq": "0.3",
         "inherit": "1"
+    },
+    "engines": {
+        "node": ">= 0.4.0 <0.7.0"
     },
     "private": true
 }

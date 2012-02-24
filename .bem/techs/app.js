@@ -1,5 +1,4 @@
 var INHERIT = require('inherit'),
-    bemUTIL = require('bem/lib/util'),
     PATH = require('bem/lib/path'),
     FS = require('fs'),
     Q = require('qq'),
@@ -28,14 +27,18 @@ exports.Tech = INHERIT(Tech, {
             });
 
         return defer.promise.then(function() {
+
+            ['models.py', 'views.py'].forEach(function(f) { FS.unlinkSync(PATH.join(blockDir, f)) });
+
             return Q.all([
-                    ['blocks', ['css', 'js'], ['model', 'view']],
-                    ['models', ['model'], ['view']],
-                    ['pages', ['view', 'html'], ['model']]
+                    ['blocks', ['css', 'js'], ['app', 'model', 'view', 'bemdecl.js']],
+                    ['models', ['model'], ['app', 'view', 'bemdecl.js']],
+                    ['pages', ['bemdecl.js', 'view', 'html'], ['app', 'model']]
                 ].map(function(i) {
                     return BEM.create.level(
-                        { dir: levelDir, level: levelDir, outputDir: blockDir, noTech: i[2] },
-                        { names: i[0] }).then(function() {
+                            { dir: levelDir, level: levelDir, outputDir: blockDir, noTech: i[2] },
+                            { names: i[0] }
+                        ).then(function() {
                             var f = FS.openSync(PATH.join(blockDir, i[0], '.bem', 'level.js'), 'a');
                             FS.writeSync(f, '\nexports.defaultTechs = ' + JSON.stringify(i[1]) + ';\n');
                             FS.closeSync(f);
@@ -43,6 +46,7 @@ exports.Tech = INHERIT(Tech, {
                 })).then(function() {
                     console.log("Don't forget to add '" + vars.BlockName + "' app to the INSTALLED_APPS in settings.py")
                 })
+
         });
     }
 
