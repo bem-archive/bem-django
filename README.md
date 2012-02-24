@@ -16,7 +16,7 @@ Copy `.bem`, `GNUmakefile`, `package.json` to your Django project root.
 Run `npm install` for install all dependencies from `package.json`.
 
 #### Build
-Just run `make` and it builds only whats needed.
+Just run `make` and it builds only what's needed.
 
 ### What can you do?
 
