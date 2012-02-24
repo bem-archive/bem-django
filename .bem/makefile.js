@@ -74,7 +74,7 @@ function buildAppsTargets(apps, opts) {
     return Q.all(apps.map(function(a) {
             return Q.all(['blocks', 'models', 'pages'].map(function(i) {
                 return BEM.create.block(
-                    { forceTech: 'introspection', levelDir: PATH.join(a, i), force: false },
+                    { forceTech: 'introspection', levelDir: PATH.join(a, i) },
                     { names: 'ALL' })
             }))
         })).then(function(res) {
@@ -99,9 +99,7 @@ function buildAppsTargets(apps, opts) {
                         buildIntrospectionPrerequisits(prjDir, introspectionTech, pagesLevel.get('block', ['ALL']), 'view'),
                     ['\tbem build -d $< -o ', ' -n views -t view -l ', '/pages'].join(a),
                     '',
-                    a + '/pages/ALL/ALL.bemdecl.js: ' +
-                        buildIntrospectionPrerequisits(prjDir, introspectionTech, pagesLevel.get('block', ['ALL']), 'bemdecl.js'),
-                    '\tbem decl merge -o $@ $(foreach d,$(subst $<,,$^), -d $d)',
+                    buildDeclMergeTarget(a, prjDir, introspectionTech, pagesLevel.get('block', ['ALL']), 'bemdecl.js'),
                     '',
                     byPagesTechs[1]
                 ].join('\n')
@@ -158,10 +156,24 @@ function buildPagesTechsTargets(app, opts) {
 }
 
 function buildIntrospectionPrerequisits(prjDir, introspectionTech, blocksAllPrefix, suffix) {
-    return PATH.relative(prjDir, introspectionTech.getPath(blocksAllPrefix)) + ' ' +
-        ('' + FS.readFileSync(introspectionTech.getPath(blocksAllPrefix, suffix + '.introspection')))
-            .split('\n').map(function(f) {
-                return PATH.relative(prjDir, PATH.join(blocksAllPrefix, '..', f))
-            }).join(' ')
+    var res = [PATH.relative(prjDir, introspectionTech.getPath(blocksAllPrefix))];
+    readFileContent(introspectionTech.getPath(blocksAllPrefix, suffix + '.introspection'))
+        .split('\n').forEach(function(f) {
+            f && f.indexOf('ALL') && res.push(PATH.relative(prjDir, PATH.join(blocksAllPrefix, '..', f)))
+        });
+    return res.join(' ')
+}
+
+function buildDeclMergeTarget(a, prjDir, introspectionTech, blocksAllPrefix, suffix) {
+    var prerequisits = buildIntrospectionPrerequisits(prjDir, introspectionTech, blocksAllPrefix, suffix);
+    return prerequisits.split(' ').length > 1 ?
+        [
+            a + '/pages/ALL/ALL.bemdecl.js: ' + prerequisits,
+            '\tbem decl merge -o $@ $(foreach d,$(subst $<,,$^), -d $d)'
+        ].join('\n') : ''
+}
+
+function readFileContent(path) {
+    return String(PATH.existsSync(path) ? FS.readFileSync(path) : '')
 }
 

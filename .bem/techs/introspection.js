@@ -22,8 +22,7 @@ exports.Tech = INHERIT(Tech, {
             'exports.blocks = ' + JSON.stringify(bemdecl),
             force,
             function() {
-
-                var techs = bemUTIL.extend(level.getTechs());
+                var techs = bemUTIL.extend({}, level.getTechs());
                 for(var t in techs) {
                     if(t == techName) delete techs[t];
                     techs[t] = [];
@@ -48,8 +47,8 @@ exports.Tech = INHERIT(Tech, {
                 }
 
             });
-
         defer.resolve();
+
 
         return defer.promise
     }
